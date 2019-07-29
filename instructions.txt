@@ -1,0 +1,41 @@
+sudo apt-get purge nvidia*
+sudo apt-get autoremove
+sudo reboot
+
+Download latest nvidia driver from https://www.nvidia.com/Download/index.aspx
+
+sudo sh ./NVIDIA-Linux-x86_64-430.34.run
+
+Download cuda 10.1 from https://developer.nvidia.com/cuda-toolkit-archive
+
+sudo sh cuda_10.1.105_418.39_linux.run
+# only choose cuda toolkit and then install
+
+add to path:
+sudo vi ~/.bashrc
+add these lines to bottom of file:
+
+export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+save and close file
+
+run:
+source ~/.bashrc
+
+
+download cudnn runtime/developer/codesamples from https://developer.nvidia.com/cudnn
+follow the instructions at https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html to install and verify
+
+
+
+
+conda create -n bashir
+conda install -c anaconda tensorflow-gpu -y
+conda install -c conda-forge keras -y
+conda install -c anaconda scikit-learn -y
+conda install -c anaconda jupyter
+conda install -c anaconda libtiff -y
+conda install -c conda-forge gdal -y
+
+
