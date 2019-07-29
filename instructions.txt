@@ -37,5 +37,6 @@ conda install -c anaconda scikit-learn -y
 conda install -c anaconda jupyter
 conda install -c anaconda libtiff -y
 conda install -c conda-forge gdal -y
+conda install -c anaconda matplotlib
 
 
