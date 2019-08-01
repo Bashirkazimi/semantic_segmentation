@@ -38,7 +38,7 @@ parser.add_argument('--epochs', type=int, default=100, help='Number of epochs to
 parser.add_argument('--batch_size', type=int, default=32, help='Batch size during training')
 parser.add_argument('--checkpoint', type=bool, default=True,
                     help='If true, model checkpointed to save the best model weights')
-parser.add_argument('--count_mid_flow', type=int, default=8, help='Count of middle layers in deep lab model')
+parser.add_argument('--count_mid_flow', type=int, default=16, help='Count of middle layers in deep lab model')
 parser.add_argument('--wildcard', default="*.tif", type=str, help='Wildcard to check for files with this extension')
 
 
