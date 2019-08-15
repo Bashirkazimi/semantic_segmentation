@@ -39,7 +39,7 @@ parser.add_argument('--batch_size', type=int, default=32, help='Batch size durin
 parser.add_argument('--checkpoint', type=bool, default=True,
                     help='If true, model checkpointed to save the best model weights')
 parser.add_argument('--count_mid_flow', type=int, default=16, help='Count of middle layers in deep lab model')
-parser.add_argument('--wildcard', default="*.tif", type=str, help='Wildcard to check for files with this extension')
+parser.add_argument('--wildcard', default="*.npy", type=str, help='Wildcard to check for files with this extension')
 
 
 def create_compile_train(args):
@@ -94,7 +94,7 @@ def create_compile_train(args):
     else:
         callbacks = None
     hist = model.fit_generator(generator=train_data, validation_data=valid_data,
-                               epochs=args.epochs, verbose=1,
+                               epochs=args.epochs, verbose=2,
                                callbacks=callbacks)
 
     df = pd.DataFrame(hist.history)

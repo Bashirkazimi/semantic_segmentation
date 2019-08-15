@@ -34,16 +34,21 @@ class Data(Sequence):
         self.image_size = image_size
         self.batch_size = batch_size
         self.input_shape = (image_size, image_size, num_channels)
+        self.wildcard = wildcard
 
         # x,y pairs for training
         self.datafiles = glob(os.path.join(data_dir, wildcard))
         self.datalabels = []
         # look for patter in input image file name and retrieve the corresponding label file name!
-        for f in self.datafiles:
-            pth, fn = os.path.split(f)
-            new_fn = fn.split('_')[0]+'.tif' if '_' in fn else fn
-            self.datalabels.append(os.path.join(label_dir, new_fn))
-
+        if wildcard == "*.tif":
+            for f in self.datafiles:
+                pth, fn = os.path.split(f)
+                new_fn = fn.split('_')[0]+'.tif' if '_' in fn else fn
+                self.datalabels.append(os.path.join(label_dir, new_fn))
+        else:  # wildcard == "*.npy"
+            for f in self.datafiles:
+                pth, fn = os.path.split(f)
+                self.datalabels.append(os.path.join(label_dir, fn))
         # self.datafiles = self.datafiles[:20]
         # self.datalabels = self.datalabels[:20]
 
@@ -57,11 +62,11 @@ class Data(Sequence):
     def __len__(self):
         return int(np.ceil(self.num_examples / float(self.batch_size)))
 
-    def __getitem__(self, idx):
+    def tif_get_item(self, idx):
         """
-        reads and returns a batch of image,label pairs.
+        Acts as getitem function if working on tif files with size 256x256 while desired is the middle 128x128
         :param idx: index to start from
-        :return: returns batch_size image label pairs starting from index idx.
+        :return: batch_size image label pairs starting from index idx
         """
         batch = self.ids[idx * self.batch_size:(idx + 1) * self.batch_size]
         ret_x = np.empty((len(batch), self.image_size, self.image_size, self.num_channels))
@@ -78,6 +83,35 @@ class Data(Sequence):
             ret_x[i] = np.expand_dims(x, -1)
             ret_y[i] = np.expand_dims(y, -1)
         return ret_x, ret_y
+
+    def npy_get_item(self, idx):
+        """
+        Acts as getitem function if working on npy data of size 128x128 where desired is also 128x128
+        :param idx: index to start from
+        :return: batch_size image label pairs starting from index idx
+        """
+        batch = self.ids[idx * self.batch_size:(idx + 1) * self.batch_size]
+        ret_x = np.empty((len(batch), self.image_size, self.image_size, self.num_channels))
+        ret_y = np.empty((len(batch), self.image_size, self.image_size, self.num_channels))
+        for i in range(len(batch)):
+            x = np.load(self.datafiles[batch[i]], allow_pickle=True)
+            if self.preprocess:
+                x = utils.zero_one(x)
+            y = np.load(self.datalabels[batch[i]], allow_pickle=True)
+            ret_x[i] = np.expand_dims(x, -1)
+            ret_y[i] = np.expand_dims(y, -1)
+        return ret_x, ret_y
+
+    def __getitem__(self, idx):
+        """
+        reads and returns a batch of image,label pairs.
+        :param idx: index to start from
+        :return: returns batch_size image label pairs starting from index idx.
+        """
+        if self.wildcard == "*.tif":
+            return self.tif_get_item(idx)
+        else:  # wildcard == '*.npy'
+            return self.npy_get_item(idx)
 
     def on_epoch_end(self):
         """
