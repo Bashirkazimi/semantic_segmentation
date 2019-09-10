@@ -10,7 +10,6 @@ plt.style.use('ggplot')
 import os
 
 
-
 def read_tif(filename):
     """
     reads a tif file to numpy array and returns
